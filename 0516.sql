@@ -76,8 +76,25 @@ SELECT ENAME AS "직원 이름" FROM EMP;
 SELECT ENAME "직원 이름" FROM EMP;
 SELECT ENAME "사원명", SAL * 12 AS "연봉" FROM EMP;
 
+-- 퀴즈1
+-- EMP 테이블에서 사원 이름에 '각자 정하고 싶은 이름' 별칭 부여해서 출력해보기
 
+-- 퀴즈2
+-- EMP 테이블에서 급여(SAL)를 연봉으로 계산해서 출력해보기
 
+-- 퀴즈3
+-- 사원명과 직무를 각각 '사원이름', '직무'로 출력해보기
 
+-- 퀴즈4
+-- 사원명과 급여, 그리고 커미션(COMM)이 있을 경우 총 수입을 계산하기,
+-- 출력 별칭은 "총 급여"로 지정해서 출력.
+-- 특정 옵션 함수 
+-- NVL(COMM,0) : COMM 있으면, COMM 값으로 출력,
+-- NVL(COMM,0) : COMM 없으면, 0 값으로 출력
+
+SELECT ENAME AS "사원이름" FROM EMP;
+SELECT ENAME "급여", SAL * 12 AS "연봉" FROM EMP;
+SELECT ENAME AS "사원이름", JOB "직무" FROM EMP;
+SELECT ENAME AS "사원명", SAL+NVL(COMM, 0)AS "총 급여" FROM EMP;
 
 
