@@ -498,19 +498,19 @@ SELECT * FROM EMP WHERE DEPTNO = 30
 )
 GROUP BY JOB;
 
--- 퀴즈1 그냥 하기.
+-- 퀴즈1 / 그냥 하기.
 -- 급여가 2975보다 높은 사원의 이름과 급여를 출력하시오
  SELECT ENAME, SAL 
  FROM EMP
  WHERE SAL > 2975;
  
--- 퀴즈2, WHERE 조건절에 서브쿼리 이용
+-- 퀴즈2 / WHERE 조건절에 서브쿼리 이용
 -- JONES보다 급여가 높은 사원의 이름과 급여를 출력하시오. 
  SELECT ENAME, SAL
  FROM EMP
  WHERE SAL > (SELECT SAL FROM EMP WHERE ENAME = 'JONES');
   
--- 퀴즈3, 메인 쿼리에 서브 쿼리 이용해서, 부서명 출력 
+-- 퀴즈3 / 메인 쿼리에 서브 쿼리 이용해서, 부서명 출력 
 -- 힌트 : SELECT 구문에 서브 쿼리 이용하기. 부서번호 일치 해보기
 -- DEPT 테이블의 부서명 표시
 SELECT ENAME,
