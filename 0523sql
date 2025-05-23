@@ -1,0 +1,224 @@
+-- 테이블에 있는 데이터 수정하기
+
+-- 기본 문법 
+-- UPDATE 테이블명 SET 수정할컬럼명 = 수정할값 WHERE 조건절;
+
+-- 복사한 테이블에서 연습하기. 
+-- EMP -> EMP_COPY 테이블 복사 
+CREATE TABLE EMP_COPY AS SELECT * FROM EMP;
+SELECT * FROM EMP_COPY;
+
+--전체 수정 
+UPDATE EMP_COPY SET SAL = 1000;
+-- 반영, 저장
+COMMIT;
+
+-- 조건 수정
+UPDATE EMP_COPY SET SAL = 2000 WHERE DEPTNO = 10;
+-- 되돌리기
+ROLLBACK;
+
+-- 서브쿼리 활용 
+SELECT DEPTNO FROM EMP WHERE ENAME = 'ALLEN'; -- 30
+UPDATE EMP_COPY SET SAL = 2000 
+WHERE DEPTNO = (
+    SELECT DEPTNO FROM EMP WHERE ENAME = 'ALLEN'
+);
+
+-- 먼저는 연습용, 
+-- DEPT -> DEPT_TEMP2 테이블 복사해보기
+-- 퀴즈1, 
+-- DEPT_TEMP2 테이블에서 부서번호가 20인 행의 지역을 'JEJU'로 수정하시오.  
+CREATE TABLE DEPT_TEMP2 AS SELECT * FROM DEPT;
+
+UPDATE DEPT_TEMP2 SET LOC = 'JEJU' WHERE DEPTNO = 20;
+SELECT * FROM DEPT_TEMP2 WHERE DEPTNO = 20;
+
+
+-- 퀴즈2, 
+-- DEPT_TEMP2 테이블의 전체 지역을 'SEOUL'로 변경하시오.  
+UPDATE DEPT_TEMP2 SET LOC = 'SEOUL';
+SELECT * FROM DEPT_TEMP2;
+
+  
+-- 퀴즈3, 
+-- 직책이 'MANAGER'인 사원의 급여를 5000으로 일괄 수정하시오.  
+UPDATE EMP_COPY SET SAL = 5000 WHERE JOB = 'MANAGER';
+SELECT * FROM EMP_COPY;
+
+---------------------------------------------------------------------------
+
+-- 테이블에 있는 데이터 삭제하기
+
+-- 기본 문법 
+-- 조건에 맞는 데이터 삭제하기
+DELETE FROM 테이블명 WHERE 조건;
+DELETE FROM EMP WHERE DEPTNO = 30;
+
+-- 서브쿼리 활용한 삭제 
+DELETE FROM EMP_COPY
+WHERE DEPTNO IN (
+    SELECT DEPTNO FROM DEPT WHERE LOC = 'DALLAS'
+);
+
+-- 전체 행 삭제하기 
+DELETE FROM EMP_COPY;
+
+SELECT * FROM EMP_COPY;
+-- 부서번호가 30인 사원 삭제하기
+DELETE FROM EMP_COPY WHERE DEPTNO = 30;
+
+-- 서브쿼리로 'DALLAS'에 있는 부서의 사원 삭제하기
+SELECT DEPTNO FROM DEPT WHERE LOC = 'DALLAS'; -- 20번 부서번호
+DELETE FROM EMP_COPY
+WHERE DEPTNO IN (
+    SELECT DEPTNO FROM DEPT WHERE LOC = 'DALLAS'
+);  
+
+-- EMP_COPY 테이블에서 모든 데이터 삭제하기
+DELETE FROM EMP_COPY;
+
+-- EMP -> EMP_TEMP2 테이블 복사해보기
+CREATE TABLE EMP_TEMP2 AS SELECT * FROM EMP;
+
+-- 퀴즈1, 
+-- EMP_TEMP2 테이블에서 급여가 3000 이상인 사원을 삭제하시오. 
+DELETE FROM EMP_TEMP2 WHERE SAL >= 3000;
+
+-- 퀴즈2, 
+-- EMP_TEMP2 테이블에서 부서번호가 10 또는 20인 사원을 삭제하시오.
+DELETE FROM EMP_TEMP2 WHERE DEPTNO IN (10,20);
+  
+-- 퀴즈3, 
+-- EMP_TEMP2 테이블의 모든 데이터를 삭제하시오. 
+DELETE FROM EMP_TEMP2;
+
+-- 하나의 단위로 데이터를 처리하는 트랜잭션
+-- 기본문법
+-- 데이터 변경
+SELECT * FROM EMP_COPY;
+-- EMP_COPY 테이블에 원본 EMP 테이블 복사
+INSERT INTO EMP_COPY
+SELECT * FROM EMP;
+COMMIT;
+
+-- EMP_COPY 순서1, 테이블 데이터 변경
+UPDATE EMP_COPY SET SAL = SAL + 5000
+WHERE DEPTNO = 30;
+
+-- 순서2, 트랜잭션 저장
+COMMIT;
+
+-- 순서3, 트랜잭션 취소
+ROLLBACK;
+
+-- 순서4, 특정 지점으로 설정
+SAVEPOINT SP1;
+
+-- 순서5, 특정 지점으로 롤백
+ROLLBACK TO SPT;
+
+-- EMP -> EMP_COPY2테이블 복사를 먼저 진행 후,
+-- 퀴즈1, 부서번호가 20인 사원들의 급여를 10% 인상 후, 조건에 따라
+-- 되돌릴 수 있도록 SAVEPOINT (SP2)를 설정하시오.
+SELECT * FROM EMP_COPY2;
+CREATE TABLE EMP_COPY2 AS SELECT * FROM EMP;
+UPDATE EMP_COPY2 SET SAL = SAL * 1.1 WHERE DEPTNO = 20;
+COMMIT;
+SAVEPOINT SP2;
+
+-- 퀴즈2, 사번이 7839인 사원의 급여를 5000으로 변경하고, 이 작업만 ROLLBACK하시오.
+UPDATE EMP_COPY2 SET SAL = 5000 WHERE MGR = 7839;
+ROLLBACK TO SP2;
+
+-- 퀴즈3, 여러 UPDATE 작업 수행 후 COMMIT하지 않고 전체를 ROLLBACK 하시오.
+ROLLBACK;
+
+-------------------------------------------------------------------------
+
+-- 객체(테이블)를 생성, 변경, 삭제하는 데이터 정의어 
+
+-- CREATE : 객체를 생성하는 명령어
+-- ALTER : 객체를 변경하는 명령어
+-- DROP : 객체를 삭제하는 명령어
+-- TRUNCATE : 테이블의 데이터를 삭제하는 명령어
+
+-- 테이블 이름 명명, 각각 언어의 예약어를 사용하면 안됨. 주의사항, 
+CREATE TABLE MEMBER_INFO (
+    MEMBER_ID NUMBER(5) PRIMARY KEY, -- PK = NOT NULL + UNIQUE(중복 불가)
+    MEMBER_NAME VARCHAR2(20) NOT NULL, -- 값이 비어 있으면 안됨.
+    MEMBER_EMAIL VARCHAR2(50) NOT NULL
+);
+SELECT * FROM MEMBER;
+-- 샘플 데이터 추가 
+INSERT INTO MEMBER_INFO (MEMBER_ID, MEMBER_NAME, MEMBER_EMAIL) VALUES (1, '홍길동', 'HONG@naver.com');
+INSERT INTO MEMBER_INFO (MEMBER_ID, MEMBER_NAME, MEMBER_EMAIL) VALUES (2, '이순신', 'DDD@naver.com');
+INSERT INTO MEMBER_INFO (MEMBER_ID, MEMBER_NAME, MEMBER_EMAIL) VALUES (3, '강감찬', 'AAA@naver.com');
+-- 테이블 구조 변경하기 
+ALTER TABLE MEMBER ADD MEMBER_PHONE VARCHAR2(20);
+
+-- 테이블 이름 변경하기 
+ALTER TABLE MEMBER RENAME TO MEMBER_INFO;
+SELECT * FROM MEMBER_INFO;
+
+-- 테이블의 내용만 전체 삭제하기 -> 빈 테이블만 남음.
+TRUNCATE TABLE MEMBER_INFO;
+
+-- 테이블 삭제하기
+DROP TABLE MEMBER_INFO;
+
+-- 퀴즈1, 
+-- 테이블 : BOARD , 
+-- 컬럼: BOARD_ID(NUMBER 5), TITLE(VARCHART2(30)), 
+-- CONTENT(VARCHART2(300)), WRITER(VARCHART2(30)), REGDATE(DATE)
+SELECT * FROM BOARD;
+
+CREATE TABLE BOARD(
+    BOARD_ID NUMBER (5) PRIMARY KEY,
+    TITLE VARCHAR2(30) NOT NULL,
+    CONTENT VARCHAR2(300) NOT NULL,
+    WRITER VARCHAR2(30) NOT NULL,
+    REGDATE DATE
+    );
+       
+INSERT INTO BOARD (BOARD_ID, TITLE, CONTENT, WRITER, REGDATE)
+VALUES (1, '첫번째', '첫번째 컨텐츠', '관리자', SYSDATE);
+
+-- 퀴즈2,ALTER ~ MODIFY
+-- BOARD 테이블에 특정 컬럼의 타입 변경 변경해보기. (WRITER VARCHART2 40으로 변경)
+ALTER TABLE BOARD MODIFY WRITER VARCHAR2(40);
+  
+-- 퀴즈3, 
+-- BOARD 테이블에 , 내용만 삭제 해보기
+TRUNCATE TABLE BOARD;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
