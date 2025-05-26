@@ -1,0 +1,41 @@
+-- 테이블에 있는 데이터 삭제하기
+
+-- 기본 문법 
+-- 조건에 맞는 데이터 삭제하기
+DELETE FROM 테이블명 WHERE 조건;
+DELETE FROM EMP WHERE DEPTNO = 30;
+
+-- 서브쿼리 활용한 삭제 
+DELETE FROM EMP_COPY
+WHERE DEPTNO IN (
+    SELECT DEPTNO FROM DEPT WHERE LOC = 'DALLAS'
+);
+
+-- 전체 행 삭제하기 
+DELETE FROM EMP_COPY;
+
+SELECT * FROM EMP_COPY;
+-- 부서번호가 30인 사원 삭제하기
+DELETE FROM EMP_COPY WHERE DEPTNO = 30;
+
+-- 서브쿼리로 'DALLAS'에 있는 부서의 사원 삭제하기
+SELECT DEPTNO FROM DEPT WHERE LOC = 'DALLAS'; -- 20번 부서번호
+DELETE FROM EMP_COPY
+WHERE DEPTNO IN (
+    SELECT DEPTNO FROM DEPT WHERE LOC = 'DALLAS'
+);  
+
+-- EMP_COPY 테이블에서 모든 데이터 삭제하기
+DELETE FROM EMP_COPY;
+
+-- EMP -> EMP_TEMP2 테이블 복사해보기
+CREATE TABLE EMP_TEMP2 AS SELECT * FROM EMP;
+-- 퀴즈1, 
+-- EMP_TEMP2 테이블에서 급여가 3000 이상인 사원을 삭제하시오. 
+ DELETE FROM EMP_TEMP2 WHERE SAL >= 3000;
+-- 퀴즈2, 
+-- EMP_TEMP2 테이블에서 부서번호가 10 또는 20인 사원을 삭제하시오.
+  DELETE FROM EMP_TEMP2 WHERE DEPTNO IN (10, 20);
+-- 퀴즈3, 
+-- EMP_TEMP2 테이블의 모든 데이터를 삭제하시오. 
+DELETE FROM EMP_TEMP2;

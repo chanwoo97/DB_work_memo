@@ -52,7 +52,6 @@ for (let i = 2000; i < 3000; i++) {
 db.logs.find() // 전체 조회.
 
 db.createCollection("logs2", { capped: true, size: 5000 }) // 5KB
-
 for (let i = 1000; i < 2000; i++) {
     db.logs2.insertOne({
         message: `로그 메세지 ${i}`,
@@ -61,7 +60,6 @@ for (let i = 1000; i < 2000; i++) {
 }
 
 db.createCollection("logs3", { capped: true, size: 5000 }) // 5KB3
-
 for (let i = 1000; i < 2000; i++) {
     db.logs3.insertOne({
         message: `로그 메세지 ${i}`,
@@ -69,9 +67,15 @@ for (let i = 1000; i < 2000; i++) {
     })
 }
 
-
-
-
+db.createCollection("logs4", { capped: true, size: 5000 })
+for (let i = 1; i < 1000; i++) {
+    db.logs4.insertOne({
+        message: `로그 메세지 ${i}`,
+        // 로그메세지 감싸는 기호는 백틱(`) 사용
+        // 백틱은 키보드에서 숫자 1 왼쪽에 있는 기호
+        timestamp: new Date()
+    })
+}
 
 db.users2.find()
 // 퀴즈 1, 한개 문서 삽입, 컬렉션 명 : users2
